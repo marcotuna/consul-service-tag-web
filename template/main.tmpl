@@ -1,6 +1,28 @@
 <html>
   <head>
     <title>Consul Service Tag Web</title>
+    <style>
+      pre {
+        outline: 1px solid #ccc;
+        padding: 5px;
+        margin: 5px;
+      }
+      .string {
+        color: green;
+      }
+      .number {
+        color: darkorange;
+      }
+      .boolean {
+        color: blue;
+      }
+      .null {
+        color: magenta;
+      }
+      .key {
+        color: red;
+      }
+    </style>
   </head>
 </html>
 <body>
@@ -34,25 +56,28 @@
       );
     }
 
-    var obj = {
-      a: 1,
-      b: "foo",
-      c: [
-        false,
-        "false",
-        null,
-        "null",
-        {
-          d: {
-            e: 1.3e5,
-            f: "1.3e5"
-          }
-        }
-      ]
-    };
-    var str = JSON.stringify(obj, undefined, 4);
-
-    output(str);
-    output(syntaxHighlight(str));
+    fetch("/v1/services", {
+      method: "GET"
+    })
+      .then(response => {
+        return response.json();
+      })
+      .then(response => {
+        output(syntaxHighlight(JSON.stringify(response.message, undefined, 4)));
+      })
+      .catch(error => {
+        output(
+          syntaxHighlight(
+            JSON.stringify(
+              {
+                status: false,
+                message: "There was an error while trying to display the data"
+              },
+              undefined,
+              4
+            )
+          )
+        );
+      });
   </script>
 </body>
